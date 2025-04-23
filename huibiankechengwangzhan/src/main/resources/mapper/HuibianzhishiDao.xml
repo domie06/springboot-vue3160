@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.HuibianzhishiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.huibianzhishi_name as huibianzhishiName
+        ,a.huibianzhishi_uuid_number as huibianzhishiUuidNumber
+        ,a.huibianzhishi_photo as huibianzhishiPhoto
+        ,a.huibianzhishi_video as huibianzhishiVideo
+        ,a.huibianzhishi_file as huibianzhishiFile
+        ,a.huibianzhishi_types as huibianzhishiTypes
+        ,a.zan_number as zanNumber
+        ,a.cai_number as caiNumber
+        ,a.huibianzhishi_clicknum as huibianzhishiClicknum
+        ,a.huibianzhishi_content as huibianzhishiContent
+        ,a.shangxia_types as shangxiaTypes
+        ,a.huibianzhishi_delete as huibianzhishiDelete
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.HuibianzhishiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+
+        FROM huibianzhishi  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.huibianzhishiName != '' and params.huibianzhishiName != null and params.huibianzhishiName != 'null' ">
+                and a.huibianzhishi_name like CONCAT('%',#{params.huibianzhishiName},'%')
+            </if>
+            <if test=" params.huibianzhishiUuidNumber != '' and params.huibianzhishiUuidNumber != null and params.huibianzhishiUuidNumber != 'null' ">
+                and a.huibianzhishi_uuid_number like CONCAT('%',#{params.huibianzhishiUuidNumber},'%')
+            </if>
+            <if test=" params.huibianzhishiVideo != '' and params.huibianzhishiVideo != null and params.huibianzhishiVideo != 'null' ">
+                and a.huibianzhishi_video like CONCAT('%',#{params.huibianzhishiVideo},'%')
+            </if>
+            <if test="params.huibianzhishiTypes != null and params.huibianzhishiTypes != ''">
+                and a.huibianzhishi_types = #{params.huibianzhishiTypes}
+            </if>
+            <if test="params.zanNumberStart != null and params.zanNumberStart != ''">
+                <![CDATA[  and a.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null and params.zanNumberEnd != ''">
+                <![CDATA[  and a.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+             <if test="params.zanNumber != null and params.zanNumber != ''">
+                and a.zan_number = #{params.zanNumber}
+             </if>
+            <if test="params.caiNumberStart != null and params.caiNumberStart != ''">
+                <![CDATA[  and a.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null and params.caiNumberEnd != ''">
+                <![CDATA[  and a.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+             <if test="params.caiNumber != null and params.caiNumber != ''">
+                and a.cai_number = #{params.caiNumber}
+             </if>
+            <if test="params.huibianzhishiClicknumStart != null and params.huibianzhishiClicknumStart != ''">
+                <![CDATA[  and a.huibianzhishi_clicknum >= #{params.huibianzhishiClicknumStart}   ]]>
+            </if>
+            <if test="params.huibianzhishiClicknumEnd != null and params.huibianzhishiClicknumEnd != ''">
+                <![CDATA[  and a.huibianzhishi_clicknum <= #{params.huibianzhishiClicknumEnd}   ]]>
+            </if>
+             <if test="params.huibianzhishiClicknum != null and params.huibianzhishiClicknum != ''">
+                and a.huibianzhishi_clicknum = #{params.huibianzhishiClicknum}
+             </if>
+            <if test=" params.huibianzhishiContent != '' and params.huibianzhishiContent != null and params.huibianzhishiContent != 'null' ">
+                and a.huibianzhishi_content like CONCAT('%',#{params.huibianzhishiContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null and params.shangxiaTypes != ''">
+                and a.shangxia_types = #{params.shangxiaTypes}
+            </if>
+            <if test="params.huibianzhishiDeleteStart != null and params.huibianzhishiDeleteStart != ''">
+                <![CDATA[  and a.huibianzhishi_delete >= #{params.huibianzhishiDeleteStart}   ]]>
+            </if>
+            <if test="params.huibianzhishiDeleteEnd != null and params.huibianzhishiDeleteEnd != ''">
+                <![CDATA[  and a.huibianzhishi_delete <= #{params.huibianzhishiDeleteEnd}   ]]>
+            </if>
+             <if test="params.huibianzhishiDelete != null and params.huibianzhishiDelete != ''">
+                and a.huibianzhishi_delete = #{params.huibianzhishiDelete}
+             </if>
+
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>

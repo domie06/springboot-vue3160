@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.HuibianzhishiLiuyanDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.huibianzhishi_id as huibianzhishiId
+        ,a.yonghu_id as yonghuId
+        ,a.huibianzhishi_liuyan_text as huibianzhishiLiuyanText
+        ,a.insert_time as insertTime
+        ,a.reply_text as replyText
+        ,a.update_time as updateTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.HuibianzhishiLiuyanView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,huibianzhishi.huibianzhishi_name as huibianzhishiName
+        ,huibianzhishi.huibianzhishi_uuid_number as huibianzhishiUuidNumber
+        ,huibianzhishi.huibianzhishi_photo as huibianzhishiPhoto
+        ,huibianzhishi.huibianzhishi_video as huibianzhishiVideo
+        ,huibianzhishi.huibianzhishi_file as huibianzhishiFile
+        ,huibianzhishi.huibianzhishi_types as huibianzhishiTypes
+        ,huibianzhishi.zan_number as zanNumber
+        ,huibianzhishi.cai_number as caiNumber
+        ,huibianzhishi.huibianzhishi_clicknum as huibianzhishiClicknum
+        ,huibianzhishi.huibianzhishi_content as huibianzhishiContent
+        ,huibianzhishi.shangxia_types as shangxiaTypes
+        ,huibianzhishi.huibianzhishi_delete as huibianzhishiDelete
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+
+        FROM huibianzhishi_liuyan  a
+        left JOIN huibianzhishi huibianzhishi ON a.huibianzhishi_id = huibianzhishi.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.huibianzhishiId != null and params.huibianzhishiId != ''">
+                and (
+                    a.huibianzhishi_id = #{params.huibianzhishiId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test=" params.huibianzhishiLiuyanText != '' and params.huibianzhishiLiuyanText != null and params.huibianzhishiLiuyanText != 'null' ">
+                and a.huibianzhishi_liuyan_text like CONCAT('%',#{params.huibianzhishiLiuyanText},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test=" params.replyText != '' and params.replyText != null and params.replyText != 'null' ">
+                and a.reply_text like CONCAT('%',#{params.replyText},'%')
+            </if>
+            <if test=" params.updateTimeStart != '' and params.updateTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) >= UNIX_TIMESTAMP(#{params.updateTimeStart}) ]]>
+            </if>
+            <if test=" params.updateTimeEnd != '' and params.updateTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) <= UNIX_TIMESTAMP(#{params.updateTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断汇编知识的id不为空 -->
+            <if test=" params.huibianzhishiIdNotNull != '' and params.huibianzhishiIdNotNull != null and params.huibianzhishiIdNotNull != 'null' ">
+                and a.huibianzhishi_id IS NOT NULL
+            </if>
+            <if test=" params.huibianzhishiName != '' and params.huibianzhishiName != null and params.huibianzhishiName != 'null' ">
+                and huibianzhishi.huibianzhishi_name like CONCAT('%',#{params.huibianzhishiName},'%')
+            </if>
+            <if test=" params.huibianzhishiUuidNumber != '' and params.huibianzhishiUuidNumber != null and params.huibianzhishiUuidNumber != 'null' ">
+                and huibianzhishi.huibianzhishi_uuid_number like CONCAT('%',#{params.huibianzhishiUuidNumber},'%')
+            </if>
+            <if test=" params.huibianzhishiVideo != '' and params.huibianzhishiVideo != null and params.huibianzhishiVideo != 'null' ">
+                and huibianzhishi.huibianzhishi_video like CONCAT('%',#{params.huibianzhishiVideo},'%')
+            </if>
+            <if test="params.huibianzhishiTypes != null  and params.huibianzhishiTypes != ''">
+                and huibianzhishi.huibianzhishi_types = #{params.huibianzhishiTypes}
+            </if>
+
+            <if test="params.zanNumberStart != null  and params.zanNumberStart != '' ">
+                <![CDATA[  and huibianzhishi.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null  and params.zanNumberEnd != '' ">
+                <![CDATA[  and huibianzhishi.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+            <if test="params.zanNumber != null  and params.zanNumber != '' ">
+                and huibianzhishi.zan_number = #{params.zanNumber}
+            </if>
+            <if test="params.caiNumberStart != null  and params.caiNumberStart != '' ">
+                <![CDATA[  and huibianzhishi.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null  and params.caiNumberEnd != '' ">
+                <![CDATA[  and huibianzhishi.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+            <if test="params.caiNumber != null  and params.caiNumber != '' ">
+                and huibianzhishi.cai_number = #{params.caiNumber}
+            </if>
+            <if test="params.huibianzhishiClicknumStart != null  and params.huibianzhishiClicknumStart != '' ">
+                <![CDATA[  and huibianzhishi.huibianzhishi_clicknum >= #{params.huibianzhishiClicknumStart}   ]]>
+            </if>
+            <if test="params.huibianzhishiClicknumEnd != null  and params.huibianzhishiClicknumEnd != '' ">
+                <![CDATA[  and huibianzhishi.huibianzhishi_clicknum <= #{params.huibianzhishiClicknumEnd}   ]]>
+            </if>
+            <if test="params.huibianzhishiClicknum != null  and params.huibianzhishiClicknum != '' ">
+                and huibianzhishi.huibianzhishi_clicknum = #{params.huibianzhishiClicknum}
+            </if>
+            <if test=" params.huibianzhishiContent != '' and params.huibianzhishiContent != null and params.huibianzhishiContent != 'null' ">
+                and huibianzhishi.huibianzhishi_content like CONCAT('%',#{params.huibianzhishiContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and huibianzhishi.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test="params.huibianzhishiDeleteStart != null  and params.huibianzhishiDeleteStart != '' ">
+                <![CDATA[  and huibianzhishi.huibianzhishi_delete >= #{params.huibianzhishiDeleteStart}   ]]>
+            </if>
+            <if test="params.huibianzhishiDeleteEnd != null  and params.huibianzhishiDeleteEnd != '' ">
+                <![CDATA[  and huibianzhishi.huibianzhishi_delete <= #{params.huibianzhishiDeleteEnd}   ]]>
+            </if>
+            <if test="params.huibianzhishiDelete != null  and params.huibianzhishiDelete != '' ">
+                and huibianzhishi.huibianzhishi_delete = #{params.huibianzhishiDelete}
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
